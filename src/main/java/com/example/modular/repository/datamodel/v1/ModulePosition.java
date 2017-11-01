@@ -1,4 +1,4 @@
-package com.example.modular.repository.datamodel;
+package com.example.modular.repository.datamodel.v1;
 
 public class ModulePosition {
 

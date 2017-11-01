@@ -2,7 +2,6 @@ package com.example.modular.executor;
 
 
 import com.example.modular.modules.ModuleResponse;
-import com.example.modular.modules.ModuleResult;
 import com.example.modular.modules.Modules;
 import com.example.modular.modules.configuration.StatesFlowConfiguration;
 import com.example.modular.modules.configuration.states.ConditionedFlowState;
@@ -11,11 +10,12 @@ import com.example.modular.modules.datamodel.Message;
 
 public class FlowExecutor {
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Message executeFlow(StatesFlowConfiguration flow, Message inputMessage){
 		
 		FlowState state = flow.getInitialState();
 		Message message = inputMessage;
-		ModuleResponse<?> response;
+		ModuleResponse response;
 		do{
 			if(!state.isFirst()){
 				state = state.getNext();	
@@ -38,16 +38,16 @@ public class FlowExecutor {
 		return message;
 	}
 	
-	private ModuleResponse<?> executeState(FlowState state, Message message){
+	private <T> ModuleResponse<T> executeState(FlowState<T> state, Message message){
 		
-		ModuleResponse<?> response = Modules.executeModule(state.getConfiguration(), message);
+		ModuleResponse<T> response = Modules.executeModule(state.getConfiguration(), message);
 		if(ConditionedFlowState.class.isInstance(state)){
-			ConditionedFlowState conditioned = (ConditionedFlowState) state;
-			ModuleResponse<Boolean> conditionResult = Modules.executeLogicalModule(conditioned.getConditionOfChoice(), message);
+			ConditionedFlowState<T> conditioned = (ConditionedFlowState<T>) state;
+			ModuleResponse<Boolean> conditionResult = Modules.executeModule(conditioned.getConditionOfChoice(), message);
 			if(!conditionResult.isOk()){
 				throw new RuntimeException("Error on module");
 			}
-			FlowState nextState = conditionResult.getResponse() ? conditioned.ifTrue() : conditioned.ifFlase();
+			FlowState<?> nextState = conditionResult.getResponse() ? conditioned.ifTrue() : conditioned.ifFlase();
 			conditioned.setNext(nextState);
 		}
 		return response;

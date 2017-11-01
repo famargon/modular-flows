@@ -4,13 +4,13 @@ import com.example.modular.modules.configuration.states.FlowState;
 
 public class StatesFlowConfiguration {
 
-	FlowState initialState;
+	FlowState<?> initialState;
 
-	public FlowState getInitialState() {
+	public FlowState<?> getInitialState() {
 		return initialState;
 	}
 
-	public void setInitialState(FlowState initialState) {
+	public void setInitialState(FlowState<?> initialState) {
 		this.initialState = initialState;
 	}
 	

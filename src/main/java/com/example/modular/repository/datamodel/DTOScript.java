@@ -2,7 +2,7 @@ package com.example.modular.repository.datamodel;
 
 import org.springframework.data.annotation.Id;
 
-public class Script {
+public class DTOScript {
 
 	@Id
 	private String id;

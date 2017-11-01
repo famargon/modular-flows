@@ -20,6 +20,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import com.example.modular.executor.FlowExecutorService;
 import com.example.modular.modules.ModuleKind;
 import com.example.modular.modules.ModuleType;
+import com.example.modular.modules.configuration.ConfigurationService;
 import com.example.modular.modules.configuration.FlowConfiguration;
 import com.example.modular.modules.configuration.ModuleConfiguration;
 import com.example.modular.modules.configuration.StatesFlowConfiguration;
@@ -28,12 +29,12 @@ import com.example.modular.modules.configuration.states.impl.FlowStateImpl;
 import com.example.modular.modules.datamodel.BasicMessage;
 import com.example.modular.modules.datamodel.Message;
 import com.example.modular.repository.FlowsRepository;
-import com.example.modular.repository.ModulesRepository;
+import com.example.modular.repository.ModuleConfigurationsRepository;
 import com.example.modular.repository.ScriptsRepository;
-import com.example.modular.repository.datamodel.Flow;
-import com.example.modular.repository.datamodel.Module;
-import com.example.modular.repository.datamodel.ModulePosition;
-import com.example.modular.repository.datamodel.Script;
+import com.example.modular.repository.datamodel.DTOModuleConfiguration;
+import com.example.modular.repository.datamodel.DTOScript;
+import com.example.modular.repository.datamodel.v1.Flow;
+import com.example.modular.repository.datamodel.v1.ModulePosition;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -47,17 +48,46 @@ public class ModularflowsApplicationTests {
 	@Autowired
 	ScriptsRepository scripts;
 	@Autowired
-	ModulesRepository modulesRepo;
+	ModuleConfigurationsRepository modulesRepo;
 	@Autowired
 	FlowsRepository flows;
 	@Autowired
 	FlowExecutorService fes;
+	@Autowired
+	ConfigurationService configService;
 	
 	@Test
 	public void statesFlowTest(){
 		TransformationModuleConfigurationImpl module = new TransformationModuleConfigurationImpl(ModuleType.JS,null);
 		module.setScript(SCRIPT_METADATA.getBytes());
-		FlowStateImpl state1 = new FlowStateImpl(null, module);
+		FlowStateImpl state1 = new FlowStateImpl(configService,null, module);
+
+		StatesFlowConfiguration config = new StatesFlowConfiguration();
+		config.setInitialState(state1);
+		
+		Message message = new BasicMessage();
+		message.getMetadata().put("text", "hello");
+		message.getMetadata().put("ref", "hello");
+		Message result = fes.execute(config, message);
+		
+		Map<String,String> metadata = result.getMetadata();
+		assertTrue(metadata.get("text").equals("asdb"));
+		assertNotNull(metadata.get("id"));
+	}
+	
+	@Test
+	public void complexStatesFlowTest(){
+		TransformationModuleConfigurationImpl module1 = new TransformationModuleConfigurationImpl(ModuleType.JS,null);
+		module1.setScript(SCRIPT_1.getBytes());
+		
+		TransformationModuleConfigurationImpl module2 = new TransformationModuleConfigurationImpl(ModuleType.JS,null);
+		module2.setScript(SCRIPT_METADATA.getBytes());
+		
+		FlowStateImpl state1 = new FlowStateImpl(configService,null, module1);
+
+		FlowStateImpl state2 = new FlowStateImpl(configService,state1, module2);
+
+		state1.setNext(state1);
 		
 		StatesFlowConfiguration config = new StatesFlowConfiguration();
 		config.setInitialState(state1);
@@ -69,6 +99,7 @@ public class ModularflowsApplicationTests {
 		
 		Map<String,String> metadata = result.getMetadata();
 		assertTrue(metadata.get("text").equals("asdb"));
+		assertTrue(metadata.get("ref").equals("script1"));
 		assertNotNull(metadata.get("id"));
 	}
 	
@@ -94,19 +125,19 @@ public class ModularflowsApplicationTests {
 	
 	@Test
 	public void databaseFlowTest(){
-		Script script = new Script();
+		DTOScript script = new DTOScript();
 		script.setContent(SCRIPT_METADATA.getBytes());
 		scripts.save(script);
-		Module moduleBase = new Module();
+		DTOModuleConfiguration moduleBase = new DTOModuleConfiguration();
 		moduleBase.setType(ModuleType.JS.name());
 		moduleBase.setScriptId(script.getId());
 		moduleBase.setKind(ModuleKind.TRANSFORMATION.name());
 		modulesRepo.save(moduleBase);
 		//////////////
-		Script script1 = new Script();
+		DTOScript script1 = new DTOScript();
 		script1.setContent(SCRIPT_1.getBytes());
 		scripts.save(script1);
-		Module moduleBase1 = new Module();
+		DTOModuleConfiguration moduleBase1 = new DTOModuleConfiguration();
 		moduleBase1.setType(ModuleType.JS.name());
 		moduleBase1.setScriptId(script1.getId());
 		moduleBase1.setKind(ModuleKind.TRANSFORMATION.name());

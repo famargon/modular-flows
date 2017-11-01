@@ -1,6 +1,7 @@
 package com.example.modular.modules.configuration;
 
 import com.example.modular.modules.ModuleType;
+import com.example.modular.modules.datamodel.Message;
 
 public interface ModuleConfiguration <T>{
 
@@ -9,5 +10,7 @@ public interface ModuleConfiguration <T>{
 	String getScriptId();
 	
 	byte[] getScript();
+	
+	T mapResult(Message message, Object result);
 	
 }

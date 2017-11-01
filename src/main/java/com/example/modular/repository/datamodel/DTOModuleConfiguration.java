@@ -2,7 +2,7 @@ package com.example.modular.repository.datamodel;
 
 import org.springframework.data.annotation.Id;
 
-public class Module {
+public class DTOModuleConfiguration {
 
 	@Id
 	private String id;

@@ -4,6 +4,6 @@ import com.example.modular.modules.Module;
 import com.example.modular.modules.configuration.ModuleConfiguration;
 import com.example.modular.modules.datamodel.Message;
 
-public interface TransformationModule <T> extends Module<T, ModuleConfiguration<T>> {
+public interface TransformationModule extends Module<Message, ModuleConfiguration<Message>> {
 
 }
