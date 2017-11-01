@@ -2,7 +2,7 @@ package com.example.modular.modules.configuration;
 
 import com.example.modular.modules.ModuleType;
 
-public interface ModuleConfiguration {
+public interface ModuleConfiguration <T>{
 
 	ModuleType getModuleType();
 	

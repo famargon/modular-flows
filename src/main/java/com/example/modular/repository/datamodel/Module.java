@@ -7,6 +7,7 @@ public class Module {
 	@Id
 	private String id;
 	private String type;
+	private String kind;
 	private String scriptId;
 	
 	public String getId() {
@@ -26,6 +27,12 @@ public class Module {
 	}
 	public void setScriptId(String scriptId) {
 		this.scriptId = scriptId;
+	}
+	public String getKind() {
+		return kind;
+	}
+	public void setKind(String kind) {
+		this.kind = kind;
 	}
 	
 }

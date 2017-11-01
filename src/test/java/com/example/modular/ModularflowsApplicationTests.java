@@ -18,10 +18,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 import com.example.modular.executor.FlowExecutorService;
+import com.example.modular.modules.ModuleKind;
 import com.example.modular.modules.ModuleType;
-import com.example.modular.modules.configuration.BaseModuleConfiguration;
 import com.example.modular.modules.configuration.FlowConfiguration;
 import com.example.modular.modules.configuration.ModuleConfiguration;
+import com.example.modular.modules.configuration.StatesFlowConfiguration;
+import com.example.modular.modules.configuration.impl.TransformationModuleConfigurationImpl;
+import com.example.modular.modules.configuration.states.impl.FlowStateImpl;
 import com.example.modular.modules.datamodel.BasicMessage;
 import com.example.modular.modules.datamodel.Message;
 import com.example.modular.repository.FlowsRepository;
@@ -51,11 +54,30 @@ public class ModularflowsApplicationTests {
 	FlowExecutorService fes;
 	
 	@Test
+	public void statesFlowTest(){
+		TransformationModuleConfigurationImpl module = new TransformationModuleConfigurationImpl(ModuleType.JS,null);
+		module.setScript(SCRIPT_METADATA.getBytes());
+		FlowStateImpl state1 = new FlowStateImpl(null, module);
+		
+		StatesFlowConfiguration config = new StatesFlowConfiguration();
+		config.setInitialState(state1);
+		
+		Message message = new BasicMessage();
+		message.getMetadata().put("text", "hello");
+		message.getMetadata().put("ref", "hello");
+		Message result = fes.execute(config, message);
+		
+		Map<String,String> metadata = result.getMetadata();
+		assertTrue(metadata.get("text").equals("asdb"));
+		assertNotNull(metadata.get("id"));
+	}
+	
+	@Test
 	public void inMemoryFlowTest(){
 		FlowConfiguration configuration = new FlowConfiguration();
-		List<ModuleConfiguration> modules = new LinkedList<>();
+		List<ModuleConfiguration<?>> modules = new LinkedList<>();
 		configuration.setModulesSequence(modules);
-		BaseModuleConfiguration module = new BaseModuleConfiguration(ModuleType.JS,null);
+		TransformationModuleConfigurationImpl module = new TransformationModuleConfigurationImpl(ModuleType.JS,null);
 		module.setScript(SCRIPT_METADATA.getBytes());
 		modules.add(module);
 		Message message = new BasicMessage();
@@ -78,6 +100,7 @@ public class ModularflowsApplicationTests {
 		Module moduleBase = new Module();
 		moduleBase.setType(ModuleType.JS.name());
 		moduleBase.setScriptId(script.getId());
+		moduleBase.setKind(ModuleKind.TRANSFORMATION.name());
 		modulesRepo.save(moduleBase);
 		//////////////
 		Script script1 = new Script();
@@ -86,6 +109,7 @@ public class ModularflowsApplicationTests {
 		Module moduleBase1 = new Module();
 		moduleBase1.setType(ModuleType.JS.name());
 		moduleBase1.setScriptId(script1.getId());
+		moduleBase1.setKind(ModuleKind.TRANSFORMATION.name());
 		modulesRepo.save(moduleBase1);
 		//////////////
 		Flow flow = new Flow();

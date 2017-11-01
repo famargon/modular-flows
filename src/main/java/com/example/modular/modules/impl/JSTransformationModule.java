@@ -13,13 +13,14 @@ import com.example.modular.modules.Module;
 import com.example.modular.modules.ModuleResponse;
 import com.example.modular.modules.configuration.ModuleConfiguration;
 import com.example.modular.modules.datamodel.Message;
+import com.example.modular.modules.types.TransformationModule;
 
-public class JSTransformationModule implements Module<Message, ModuleConfiguration>{
+public class JSTransformationModule implements TransformationModule<Message>{
 
 	private static final Logger LOG = LoggerFactory.getLogger(JSTransformationModule.class);	
 	
 	@Override
-	public ModuleResponse<Message> apply(ModuleConfiguration configuration, Message message) {
+	public ModuleResponse<Message> apply(ModuleConfiguration<Message> configuration, Message message) {
 		try{
 			ScriptEngineManager factory = new ScriptEngineManager();
 			ScriptEngine engine = factory.getEngineByName("nashorn");

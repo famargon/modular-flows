@@ -1,11 +1,12 @@
-package com.example.modular.modules.configuration;
+package com.example.modular.modules.configuration.impl;
 
 import com.example.modular.FlowsApplicationContext;
 import com.example.modular.modules.ModuleType;
+import com.example.modular.modules.configuration.ModuleConfiguration;
 import com.example.modular.repository.ScriptsRepository;
 import com.example.modular.repository.datamodel.Script;
 
-public class BaseModuleConfiguration implements ModuleConfiguration{
+public class BaseModuleConfiguration <T> implements ModuleConfiguration<T>{
 
 	protected ModuleType type;
 	protected String scriptId;

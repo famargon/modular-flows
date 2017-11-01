@@ -14,6 +14,10 @@ public interface ModuleResponse <T> {
 		return new ModuleResponseImpl<T>().setResult(ModuleResult.ERROR).setResponse(response);
 	}
 	
+	default boolean isOk(){
+		return getResult().equals(ModuleResult.OK);
+	}
+	
 	static class ModuleResponseImpl <T> implements ModuleResponse<T>{
 		private ModuleResult result;
 		private T response;

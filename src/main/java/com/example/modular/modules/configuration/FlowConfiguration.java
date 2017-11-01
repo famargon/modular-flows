@@ -4,13 +4,13 @@ import java.util.List;
 
 public class FlowConfiguration {
 
-	List<ModuleConfiguration> modulesSequence;
+	List<ModuleConfiguration<?>> modulesSequence;
 
-	public List<ModuleConfiguration> getModulesSequence() {
+	public List<ModuleConfiguration<?>> getModulesSequence() {
 		return modulesSequence;
 	}
 
-	public void setModulesSequence(List<ModuleConfiguration> modulesSequence) {
+	public void setModulesSequence(List<ModuleConfiguration<?>> modulesSequence) {
 		this.modulesSequence = modulesSequence;
 	}
 	

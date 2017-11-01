@@ -13,7 +13,7 @@ import com.example.modular.executor.FlowExecutorService;
 import com.example.modular.modules.datamodel.Message;
 
 @RestController
-public class FlowsService {
+public class FlowsController {
 
 	@Autowired
 	private FlowExecutorService flowsService;
